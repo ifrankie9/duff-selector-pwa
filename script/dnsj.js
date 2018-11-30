@@ -31,11 +31,11 @@ function updateScrewTypeImage() {
     var acmeScrewOption = document.getElementById('acme-screw-extra-option');
     if (screwTypeImage.getAttribute('src') === jackAcme){
         screwTypeImage.src = jackBall;
-        acmeScrewOption.style.display = "none";
+        acmeScrewOption.style.visibility = "hidden";
     }
     else if (screwTypeImage.getAttribute('src') === jackBall){
-        screwTypeImage.src = acmescrew;
-        acmeScrewOption.style.display = "block";
+        screwTypeImage.src = jackAcme;
+        acmeScrewOption.style.visibility = "visible";
     }
 }
 
@@ -57,12 +57,12 @@ function updateConfigurationImage() {
     }
     else if (configSelect.options[configSelect.selectedIndex].value === "UR"){
         configImage.src = upRotateImage;
-        transEndSelect.style.display = "block";
+        transEndSelect.style.display = "none";
         keyedSelect.style.display = "none";
     }
     else if (configSelect.options[configSelect.selectedIndex].value === "IR"){
         configImage.src = invRotateImage;
-        transEndSelect.style.display = "block";
+        transEndSelect.style.display = "none";
         keyedSelect.style.display = "none";
     }
     else if (configSelect.options[configSelect.selectedIndex].value === "CC"){
@@ -131,15 +131,14 @@ function updateLoadColumImage() {
     }
 }
 
-function updateScrewTypeImage() {
-    var screwTypeImage = document.getElementById('screwtype-img');
-    var acmeScrewOption = document.getElementById('acme-screw-extra-option');
-    if (screwTypeImage.getAttribute('src') === jackAcme){
-        screwTypeImage.src = jackBall;
-        acmeScrewOption.style.display = "none";
-    }
-    else if (screwTypeImage.getAttribute('src') === jackBall){
-        screwTypeImage.src = jackAcme;
-        acmeScrewOption.style.display = "block";
-    }
+function showjackOptions() {
+    $('.input-jack-details').show();
+    $('.next-arrow').hide();
 }
+
+
+function resetInput(){
+    $('.input-jack-details').hide();
+    $('.next-arrow').show();
+}
+
