@@ -25,6 +25,11 @@ var oneFixOneGuide= "./images/guides/worm-jack/loadCompOneFixOneGuide.png";
 
 var unitStateOpened = false;
 
+var dynLoad = 0;
+var staLoad = 0;
+var travelLength = 0;
+var travelSpeed = 0;
+
 
 function updateScrewTypeImage() {
     var screwTypeImage = document.getElementById('screwtype-img');
@@ -131,13 +136,65 @@ function updateLoadColumImage() {
     }
 }
 
-function showjackOptions() {
-    $('.input-jack-details').show();
-    $('.next-arrow').hide();
+function validateNumberInput() {
+    var vdynload = dynLoad;
+    var vstaload = staLoad;
+    var vtrlength = travelLength;
+    var vtrspeed = travelSpeed;
+
+    if (vdynload < 0) {
+        alert("Please enter a positive number for Dynamic Load.")
+        return(false);
+    }
+    else if (vstaload < 0) {
+        alert("Please enter a positive number for Static Load.")
+        return(false);
+    }
+    else if (vtrlength < 0) {
+        alert("Please enter a positive number for Stroke Length.")
+        return(false);
+    }
+    else if (vtrspeed < 0) {
+        alert("Please enter a positive number for Lifting Speed.")
+        return(false);
+    }
+    else if ((isNaN(vdynload) || isNaN(vstaload) || isNaN(vtrlength) || isNaN(vtrspeed)) && (vdynload != "" || vstaload != "" || vtrlength != "" || vtrspeed != "")) {
+        alert("Please enter a valid number.");
+        testresult = false;
+    }
+    else {
+        testresult = true;
+    }
+    return (testresult);
+
+}
+
+function showjackOptions(portId) {
+    dynLoad = $("div#" + portId + " input[name=dynamic-load]").val();
+    staLoad = $("div#" + portId + " input[name=static-load]").val();
+    travelLength = $("div#" + portId + " input[name=stroke]").val();
+    travelSpeed = $("div#" + portId + " input[name=speed]").val();
+    
+    if ((dynLoad == "") || (staLoad == "") || (travelLength == "") || (travelSpeed == "")) {
+        alert("Please enter positive numbers for Dynamic Load, Static Load, Stroke and Lifting Speed.");    
+    }   
+    else if ((dynLoad != "") && (staLoad != "") && (travelLength != "") && (travelSpeed != "")) {
+        if (validateNumberInput()) {
+            $('.input-jack-details').show();
+            $('.next-arrow').hide();
+        }    
+    }
 }
 
 
-function resetInput(){
+function resetInput(portId){
+    $("div#" + portId + " div.mdl-textfield").removeClass('is-dirty');
+
+    $("div#" + portId + " input[name=dynamic-load]").val("");
+    $("div#" + portId + " input[name=static-load]").val("");
+    $("div#" + portId + " input[name=stroke]").val("");
+    $("div#" + portId + " input[name=speed]").val("");
+
     $('.input-jack-details').hide();
     $('.next-arrow').show();
 }
