@@ -1,0 +1,19 @@
+.drop-list-input .mdl-textfield__input {
+    font-size: 16px;
+}
+
+.drop-select-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    /* padding-top: 20px; */
+}
+
+#screw-type {
+    margin-left: 6.5%;
+}
+  
+.next-arrow {
+    /* position: fixed; or absolute */
+    padding-left: 80%;
+}
