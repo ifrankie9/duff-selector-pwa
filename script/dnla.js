@@ -203,3 +203,15 @@ function hideCapacitorOpt() {
     capacitorSelect.style.display = 'none';
 }
 
+function clearInputs(portId){
+    $("div#" + portId + " div.mdl-textfield").removeClass('is-dirty');
+
+    $("div#" + portId + " input[name=dynamic-load]").val("");
+    $("div#" + portId + " input[name=stroke]").val("");
+    $("div#" + portId + " input[name=speed]").val("");
+    $("div#" + portId + " input[name=dutycycle]").val("");
+    $("div#" + portId + " input[name=number-required]").val("");
+
+    $("div#power-source-options").hide();
+    $("div#capacitor-options").hide();
+}

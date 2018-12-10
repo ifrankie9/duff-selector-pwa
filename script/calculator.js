@@ -22,7 +22,47 @@ var cspeedlength = 0;
 var cspeedrotdia = 0;
 var cspeedspeed = 0;
 var cspeedsafespeed = 0;
+var csfactor = 1.47;
 
+var colnstrescrewlength = 0;
+var colnstrescrewrotdia = 0;
+var colnstrescrewLoad = 0;
+var colnstrescrewfactor = 2;
+
+var colnstreacmejackrotdia = 0;
+var colnstreacmejacklength = 0;
+var colnstreacmejackradius = 0;
+var colnstreacmejackmaxlen = 0;
+var colnstreacmejacktrslen = 0;
+var colnstreacmejackfactor = 2.1;
+var colnstreacmejackyieldfactor = 35000;
+var colnstreacmejackycc = 0;
+var colnstreacmejackmaxsledratio = 200;
+var colnstreacmejackmodelast = 29000000;
+var colnstreacmejackload = 0;
+var colnstreacmejackyieldstrength = 0;
+
+var colnstreballjackrotdia = 0;
+var colnstreballjacklength = 0;
+var colnstreballjackradius = 0;
+var colnstreballjackmaxlen = 0;
+var colnstreballjacktrslen = 0;
+var colnstreballjackfactor = 2.1;
+var colnstreballjackyieldfactor = 35000;
+var colnstreballjackycc = 0;
+var colnstreballjackmaxsledratio = 200;
+var colnstreballjackmodelast = 29000000;
+var colnstreballjackload = 0;
+var colnstreballjackyieldstrength = 0;
+
+var endFxFr = "./images/guides/calculator/endFixedFree.png";
+var endSS = "./images/guides/calculator/endSimpleSimple.png";
+var endFxS = "./images/guides/calculator/endFixedSimple.png";
+var endFxFx = "./images/guides/calculator/endFixedFixed.png";
+
+var endjackFxFr = "./images/guides/calculator/loadOneFixOneFree.png";
+var endjackPnEd = "./images/guides/calculator/loadPinnedEnd.png";
+var endjackFxGd = "./images/guides/calculator/loadOneFixOneGuide.png";
 
 
 function goUnitConversion() {
@@ -42,6 +82,21 @@ function goCritSpeed() {
     $('div#cal-critical-speed').show();
 }
 
+function goColnStrengthAcmeJack() {
+    hideAllCards();
+    $('div#cal-column-strength-jack-acme').show();
+}
+
+function goColnStrengthBallJack() {
+    hideAllCards();
+    $('div#cal-column-strength-jack-ball').show();
+}
+
+function goColnStrengthScrew() {
+    hideAllCards();
+    $('div#cal-column-strength-screw').show();
+}
+
 function goCalculators() {
     hideAllCards();
     $('div.station').show();
@@ -53,6 +108,9 @@ function hideAllCards() {
     $('div#cal-unit-conversion').hide();
     $('div#cal-horsepower').hide();
     $('div#cal-critical-speed').hide();
+    $('div#cal-column-strength-jack-acme').hide();
+    $('div#cal-column-strength-jack-ball').hide();
+    $('div#cal-column-strength-screw').hide();
 }
 
 //**********  Conversion Calculator Port  **********//
@@ -441,9 +499,288 @@ function critSpeedCalculate(portId) {
     $("div#" + portId + " input[name=cal-crit-speed-speed]").val(cspeedspeed);
     $("div#" + portId + " input[name=cal-crit-speed-speed-safe]").val(cspeedsafespeed);
 }
+
 function updateCritSpeed() {
-    cspeedspeed = calcRound((4760000 * (cspeedrotdia / (cspeedlength * cspeedlength))), 2);
-    cspeedsafespeed = calcRound((cspeedspeed * 0.8), 2)
+    cspeedspeed = calcRound(((csfactor * 4760000 * cspeedrotdia) / (cspeedlength * cspeedlength)), 0);
+    cspeedsafespeed = calcRound((cspeedspeed * 0.8), 0)
+}
+
+function updateBearingImage() {
+    var bearingImage = $('#bearing-img');
+    var bearingfigSelect = document.getElementById('bearingSupportList');
+    if (bearingfigSelect.options[bearingfigSelect.selectedIndex].value == "FxFr"){
+        bearingImage.attr('src', endFxFr);
+        csfactor = 0.36;
+    }
+    else if (bearingfigSelect.options[bearingfigSelect.selectedIndex].value == "SS"){
+        bearingImage.attr('src', endSS);
+        csfactor = 1;
+    }
+    else if (bearingfigSelect.options[bearingfigSelect.selectedIndex].value === "FxS"){
+        bearingImage.attr('src', endFxS);
+        csfactor = 1.47;
+    }
+    else if (bearingfigSelect.options[bearingfigSelect.selectedIndex].value === "FxFx"){
+        bearingImage.attr('src', endFxFx);
+        csfactor = 2.23;
+    }
+}
+
+//**********  Screw Nut Column Strength Calculator Port  **********//
+function validateScrewColnStrength() {
+    var vcslength = colnstrescrewlength;
+    var vcsrootdia = colnstrescrewrotdia;
+
+    if(vcslength < 0) {
+        alert("Please enter a positive number.");
+        return(False);
+    }
+    else if(vcsrootdia < 0) {
+        alert("Please enter a positive number.");
+        return(False);
+    }
+    else if(isNaN(vcslength)) {
+        alert("Please enter a positive number.");
+        return(False);
+    }
+    else if(isNaN(vcsrootdia)) {
+        alert("Please enter a positive number.");
+        return(False);
+    }
+    else {
+        testresult = true;
+    }
+    return (testresult);
+}
+
+function calculateScrewcolnStrength(portId) {
+
+    colnstrescrewlength = $("div#" + portId + " input[name=cal-screw-coln-stre-length]").val();
+    colnstrescrewrotdia = $("div#" + portId + " input[name=cal-screw-coln-stre-rotdia]").val();
+    colnstrescrewload = $("div#" + portId + " input[name=cal-screw-coln-stre-load]").val();
+
+    if ((colnstrescrewlength != "") && (colnstrescrewrotdia == "")) {
+        alert("Please enter a positive number for Length and Root Diameter.");    
+    }
+    else if ((colnstrescrewlength == "") && (colnstrescrewrotdia != "")) {
+        alert("Please enter a positive number for Length and Root Diameter.");    
+    }
+    else if ((colnstrescrewlength != "") && (colnstrescrewrotdia != "")) {
+        if (validateScrewColnStrength()) {
+            updateScrewColnStre();
+        }    
+    }
+
+    $("div#" + portId + " div.mdl-textfield").addClass('is-dirty');  
+    $("div#" + portId + " input[name=cal-screw-coln-stre-load]").val(colnstrescrewLoad);
+}
+
+function updateScrewColnStre() {
+    colnstrescrewLoad = calcRound(((colnstrescrewfactor * 14030000 * (colnstrescrewrotdia * colnstrescrewrotdia * colnstrescrewrotdia * colnstrescrewrotdia)) / (colnstrescrewlength * colnstrescrewlength)), 0);
+}
+
+function updateColnBearingImage() {
+    var colnBearingImage = $('#screw-coln-bearing-img');
+    var colnBearingfigSelect = document.getElementById('columnBearingSupportList');
+    if (colnBearingfigSelect.options[colnBearingfigSelect.selectedIndex].value == "FxFr"){
+        colnBearingImage.attr('src', endFxFr);
+        colnstrescrewfactor = 0.25;
+    }
+    else if (colnBearingfigSelect.options[colnBearingfigSelect.selectedIndex].value == "SS"){
+        colnBearingImage.attr('src', endSS);
+        colnstrescrewfactor = 1;
+    }
+    else if (colnBearingfigSelect.options[colnBearingfigSelect.selectedIndex].value === "FxS"){
+        colnBearingImage.attr('src', endFxS);
+        colnstrescrewfactor = 2;
+    }
+    else if (colnBearingfigSelect.options[colnBearingfigSelect.selectedIndex].value === "FxFx"){
+        colnBearingImage.attr('src', endFxFx);
+        colnstrescrewfactor = 4;
+    }
+}
+
+//**********  Jack Acme Column Strength Calculator Port  **********//
+function validateAcmeJackColnStrength() {
+    var vcslength = colnstreacmejacklength;
+    var vcsrootdia = colnstreacmejackrotdia;
+
+    if(vcslength < 0) {
+        alert("Please enter a positive number.");
+        return(False);
+    }
+    else if(vcsrootdia < 0) {
+        alert("Please enter a positive number.");
+        return(False);
+    }
+    else if(isNaN(vcslength)) {
+        alert("Please enter a positive number.");
+        return(False);
+    }
+    else if(isNaN(vcsrootdia)) {
+        alert("Please enter a positive number.");
+        return(False);
+    }
+    else {
+        testresult = true;
+    }
+    return (testresult);
+}
+
+function calculateJackcolnStrength(portId){
+
+    colnstreacmejackrotdia = $("div#" + portId + " input[name=cal-acme-jack-coln-stre-rotdia]").val();
+    colnstreacmejacklength = $("div#" + portId + " input[name=cal-acme-jack-coln-stre-length]").val();
+
+    if ((colnstreacmejacklength != "") && (colnstreacmejackrotdia == "")) {
+        alert("Please enter a positive number for Length and Root Diameter.");    
+    }
+    else if ((colnstreacmejacklength == "") && (colnstreacmejackrotdia != "")) {
+        alert("Please enter a positive number for Length and Root Diameter.");    
+    }
+    else if ((colnstreacmejacklength != "") && (colnstreacmejackrotdia != "")) {
+        if (validateAcmeJackColnStrength()) {
+            updateAcmeJackColnStreJack();
+        }    
+    }
+
+    $("div#" + portId + " div.mdl-textfield").addClass('is-dirty');
+    $("div#" + portId + " input[name=cal-acme-jack-coln-stre-maxlen]").val(colnstreacmejackmaxlen);
+    $("div#" + portId + " input[name=cal-acme-jack-coln-stre-load]").val(colnstreacmejackload);
+}
+
+function updateAcmeJackColnStreJack() {
+    colnstreacmejackradius = calcRound((colnstreacmejackrotdia * 0.25), 4);
+    colnstreacmejackyieldstrength = calcRound((2 * Math.PI * colnstreacmejackmodelast), 4);
+
+    if (colnstreacmejackrotdia < 0.5){
+        colnstreacmejackyieldfactor = 35000;
+        colnstreacmejackycc = calcRound((Math.sqrt(colnstreacmejackyieldstrength / colnstreacmejackyieldfactor)), 4);
+    }
+    else if (((colnstreacmejackrotdia < 1) && (colnstreacmejackrotdia > 0.5)) ||
+                ((colnstreacmejackrotdia < 5) && (colnstreacmejackrotdia > 4))){
+                colnstreacmejackyieldfactor = 90000;
+                colnstreacmejackycc = calcRound((Math.sqrt(colnstreacmejackyieldstrength / colnstreacmejackyieldfactor)), 4);
+    }
+    else if ((colnstreacmejackrotdia < 4) && (colnstreacmejackrotdia > 1)){
+        colnstreacmejackyieldfactor = 70000;
+        colnstreacmejackycc = calcRound((Math.sqrt(colnstreacmejackyieldstrength / colnstreacmejackyieldfactor)), 4);
+    }
+    else if (colnstreacmejackrotdia > 5){
+        colnstreacmejackyieldfactor = 100000;
+        colnstreacmejackycc = calcRound((Math.sqrt(colnstreacmejackyieldstrength / colnstreacmejackyieldfactor)), 4);
+    }
+
+    colnstreacmejackmaxlen = calcRound((colnstreacmejackradius * colnstreacmejackmaxsledratio / colnstreacmejackfactor), 0);
+    colnstreacmejacktrslen = calcRound((colnstreacmejackradius * colnstreacmejackycc / colnstreacmejackfactor), 0);
+
+    if (colnstreacmejacklength < colnstreacmejacktrslen){
+        colnstreacmejackload = calcRound((Math.PI * colnstreacmejackyieldfactor * Math.pow(colnstreacmejackrotdia, 2) / 4) - (Math.pow(colnstreacmejackfactor, 2) * Math.pow(colnstreacmejackyieldfactor,2) * Math.pow(colnstreacmejacklength, 2) / (Math.PI * colnstreacmejackmodelast)), 0);
+    }
+    else if (colnstreacmejacklength < colnstreacmejackmaxlen){
+        colnstreacmejackload = calcRound((Math.pow(Math.PI, 3) * colnstreacmejackmodelast * Math.pow(colnstreacmejackrotdia, 4) / (64 * Math.pow(colnstreacmejackfactor, 2) * Math.pow(colnstreacmejacklength, 2))), 0);
+    }
+}
+
+function updateAcmeColnEndFixImage() {
+    var colnEndFixImage = $('#jack-acme-coln-endfix-img');
+    var colnEndfixfigSelect = document.getElementById('endFixityAcmeList');
+    if (colnEndfixfigSelect.options[colnEndfixfigSelect.selectedIndex].value == "FxFr"){
+        colnEndFixImage.attr('src', endjackFxFr);
+        colnstreacmejackfactor = 2.1;
+    }
+    else if (colnEndfixfigSelect.options[colnEndfixfigSelect.selectedIndex].value == "PnEd"){
+        colnEndFixImage.attr('src', endjackPnEd);
+        colnstreacmejackfactor = 1;
+    }
+    else if (colnEndfixfigSelect.options[colnEndfixfigSelect.selectedIndex].value === "FxGd"){
+        colnEndFixImage.attr('src', endjackFxGd);
+        colnstreacmejackfactor = 0.8;
+    }
+}
+
+//**********  Jack Ball Column Strength Calculator Port  **********//
+function validateBallJackColnStrength() {
+    var vcslength = colnstreballjacklength;
+    var vcsrootdia = colnstreballjackrotdia;
+
+    if(vcslength < 0) {
+        alert("Please enter a positive number.");
+        return(False);
+    }
+    else if(vcsrootdia < 0) {
+        alert("Please enter a positive number.");
+        return(False);
+    }
+    else if(isNaN(vcslength)) {
+        alert("Please enter a positive number.");
+        return(False);
+    }
+    else if(isNaN(vcsrootdia)) {
+        alert("Please enter a positive number.");
+        return(False);
+    }
+    else {
+        testresult = true;
+    }
+    return (testresult);
+}
+
+function calculateJackcolnStrength(portId){
+
+    colnstreballjackrotdia = $("div#" + portId + " input[name=cal-ball-jack-coln-stre-rotdia]").val();
+    colnstreballjacklength = $("div#" + portId + " input[name=cal-ball-jack-coln-stre-length]").val();
+
+    if ((colnstreballjacklength != "") && (colnstreballjackrotdia == "")) {
+        alert("Please enter a positive number for Length and Root Diameter.");    
+    }
+    else if ((colnstreballjacklength == "") && (colnstreballjackrotdia != "")) {
+        alert("Please enter a positive number for Length and Root Diameter.");    
+    }
+    else if ((colnstreballjacklength != "") && (colnstreballjackrotdia != "")) {
+        if (validateBallJackColnStrength()) {
+            updateBallJackColnStreJack();
+        }    
+    }
+
+    $("div#" + portId + " div.mdl-textfield").addClass('is-dirty');
+    $("div#" + portId + " input[name=cal-ball-jack-coln-stre-maxlen]").val(colnstreballjackmaxlen);
+    $("div#" + portId + " input[name=cal-ball-jack-coln-stre-load]").val(colnstreballjackload);
+}
+
+function updateBallJackColnStreJack() {
+
+    colnstreballjackradius = calcRound((colnstreballjackrotdia * 0.25), 4);
+    colnstreballjackyieldstrength = calcRound((2 * Math.pow(Math.PI, 2) * colnstreballjackmodelast), 4);
+    colnstreballjackyieldfactor = 100000;
+    colnstreballjackycc = calcRound((Math.sqrt(colnstreballjackyieldstrength / colnstreballjackyieldfactor)), 4);
+
+    colnstreballjackmaxlen = calcRound((colnstreballjackradius * colnstreballjackmaxsledratio / colnstreballjackfactor), 0);
+    colnstreballjacktrslen = calcRound((colnstreballjackradius * colnstreballjackycc / colnstreballjackfactor), 0);
+
+    if (colnstreballjacklength < colnstreballjacktrslen){
+        colnstreballjackload = calcRound((Math.PI * colnstreballjackyieldfactor * Math.pow(colnstreballjackrotdia, 2) / 4) - (Math.pow(colnstreballjackfactor, 2) * Math.pow(colnstreballjackyieldfactor,2) * Math.pow(colnstreballjacklength, 2) / (Math.PI * colnstreballjackmodelast)), 0);
+    }
+    else if (colnstreballjacklength < colnstreballjackmaxlen){
+        colnstreballjackload = calcRound((Math.pow(Math.PI, 3) * colnstreballjackmodelast * Math.pow(colnstreballjackrotdia, 4) / (64 * Math.pow(colnstreballjackfactor, 2) * Math.pow(colnstreballjacklength, 2))), 0);
+    }
+}
+
+function updateBallColnEndFixImage() {
+    var colnEndFixImage = $('#jack-ball-coln-endfix-img');
+    var colnEndfixfigSelect = document.getElementById('endFixityBallList');
+    if (colnEndfixfigSelect.options[colnEndfixfigSelect.selectedIndex].value == "FxFr"){
+        colnEndFixImage.attr('src', endjackFxFr);
+        colnstreballjackfactor = 2.1;
+    }
+    else if (colnEndfixfigSelect.options[colnEndfixfigSelect.selectedIndex].value == "PnEd"){
+        colnEndFixImage.attr('src', endjackPnEd);
+        colnstreballjackfactor = 1;
+    }
+    else if (colnEndfixfigSelect.options[colnEndfixfigSelect.selectedIndex].value === "FxGd"){
+        colnEndFixImage.attr('src', endjackFxGd);
+        colnstreballjackfactor = 0.8;
+    }
 }
 
 //**********   MAIN Functions  **********//
@@ -493,5 +830,27 @@ function clearInputs(portId){
         $("div#" + portId + " input[name=cal-crit-speed-speed]").val("");
         $("div#" + portId + " input[name=cal-crit-speed-speed-safe]").val("");
     }
-}
+    if (portId == 'cal-column-strength-screw') {
+        $("div#" + portId + " div.mdl-textfield").removeClass('is-dirty');
+        
+        $("div#" + portId + " input[name=cal-screw-coln-stre-length]").val("");
+        $("div#" + portId + " input[name=cal-screw-coln-stre-rotdia]").val("");
+        $("div#" + portId + " input[name=cal-screw-coln-stre-load]").val("");
+    }
+    if (portId = 'cal-column-strength-jack-acme') {
+        $("div#" + portId + " div.mdl-textfield").removeClass('is-dirty');
+        
+        $("div#" + portId + " input[name=cal-acme-jack-coln-stre-rotdia]").val("");
+        $("div#" + portId + " input[name=cal-acme-jack-coln-stre-length]").val("");
+        $("div#" + portId + " input[name=cal-acme-jack-coln-stre-maxlen]").val("");
+        $("div#" + portId + " input[name=cal-acme-jack-coln-stre-load]").val("");
+    }
+    if (portId = 'cal-column-strength-jack-ball') {
+        $("div#" + portId + " div.mdl-textfield").removeClass('is-dirty');
 
+        $("div#" + portId + " input[name=cal-ball-jack-coln-stre-rotdia]").val("");
+        $("div#" + portId + " input[name=cal-ball-jack-coln-stre-length]").val("");
+        $("div#" + portId + " input[name=cal-ball-jack-coln-stre-maxlen]").val("");
+        $("div#" + portId + " input[name=cal-ball-jack-coln-stre-load]").val("");
+    }
+}
